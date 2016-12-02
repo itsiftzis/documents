@@ -1,0 +1,34 @@
+group 'ctp.cms'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
+
+processResources {
+    filter { String line -> line.replace("{namespace}", System.properties['namespace']) }
+}
+
+task copyFiles(type: Copy) {
+    from 'src/main/resources/namespaces'
+    into "$buildDir/resources/main/namespaces"
+    rename 'documenttypes.cnd', 'ctplotteryiecms.cnd'
+}
+
+jar {
+    baseName = 'documenttypes'
+    from('src/main') {
+        includes ['**/*.xml']
+        excludes ['**/*.cnd, **/*.properties']
+    }
+
+    manifest {
+        attributes 'Implementation-Title': 'Document Types', 'Implementation-Version': version
+    }
+}
